@@ -35,20 +35,22 @@ model User {
 }
 
 model Book {
-  id            Int       @id @default(autoincrement())
-  title         String
-  author        String
-  isbn          String    @unique
-  genre         String
-  description   String?
-  language      String    @default("English")
-  shelfLocation String?
-  available     Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  loans         Loan[]
-  ratings       Rating[]
-  holds         Hold[]
-  wishlists     Wishlist[]
+  id             Int      @id @default(autoincrement())
+  title          String
+  author         String
+  isbn           String   @unique
+  genre          String
+  description    String?
+  language       String   @default("English")
+  shelfLocation  String?
+  available      Boolean  @default(true)        // 保留兼容
+  totalCopies    Int      @default(1)           // 新增
+  availableCopies Int     @default(1)           // 新增
+  createdAt      DateTime @default(now())
+  loans          Loan[]
+  ratings        Rating[]
+  holds          Hold[]
+  wishlists      Wishlist[]
 }
 
 model Loan {

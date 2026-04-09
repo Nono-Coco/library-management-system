@@ -96,6 +96,8 @@ async function main() {
         language: 'English',
         shelfLocation: `${book.genre}-${Math.floor(Math.random() * 100)}`,
         available: book.available,
+        totalCopies: 1,
+        availableCopies: book.available ? 1 : 0,
       },
     });
   }
