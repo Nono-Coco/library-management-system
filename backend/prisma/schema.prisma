@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./prisma/dev.db"
 }
 
 enum Role {
@@ -114,4 +114,14 @@ model AuditLog {
   detail    String?
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id])
+}
+model Librarian {
+  id         Int      @id @default(autoincrement())
+  employeeId String   @unique @map("employee_id")
+  name       String
+  password   String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("librarians")
 }
