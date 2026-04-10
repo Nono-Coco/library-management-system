@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 
 const readersRouter = require('./routes/readers');
-const loansRouter = require('./routes/loans');   // 新增：借阅路由
+const authRouter = require('./routes/auth');    
+const loansRouter = require('./routes/loans');   
 
 const app = express();
 
@@ -15,7 +16,8 @@ app.get('/health', (req, res) => {
 
 app.use('/api/readers', readersRouter);
 app.use('/api/auth', readersRouter);
-app.use('/api/loans', loansRouter);               // 新增：挂载借阅接口
+app.use('/api/librarian/auth', authRouter);      // 你的代码
+app.use('/api/loans', loansRouter);              // 上游代码
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
