@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./prisma/dev.db"
+}
+
+enum Role {
+  STUDENT
+  LIBRARIAN
+  ADMIN
+}
+
+enum HoldStatus {
+  WAITING
+  READY
+  CANCELLED
+}
+
+enum CopyStatus {
+  AVAILABLE
+  BORROWED
+  LOST
+  DAMAGED
+}
+
+model User {
+  id                     Int                     @id @default(autoincrement())
+  name                   String
+  email                  String                  @unique
+  passwordHash           String
+  studentId              String?                 @unique
+  employeeId             String?                 @unique  // 新增：馆员工号
+  role                   Role                    @default(STUDENT)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  
+  loans                  Loan[]
+  ratings                Rating[]
+  holds                  Hold[]
+  wishlists              Wishlist[]
+  auditLogs              AuditLog[]
+  announcementPublishers AnnouncementPublisher[]
+}
+
+model Book {
+  id              Int      @id @default(autoincrement())
+  title           String
+  author          String
+  isbn            String   @unique
+  genre           String
+  description     String?
+  language        String   @default("English")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  copies          Copy[]
+  ratings         Rating[]
+  holds           Hold[]
+  wishlists       Wishlist[]
+}
+
+model Copy {
+  id          Int        @id @default(autoincrement())
+  bookId      Int
+  book        Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  barcode     String     @unique
+  floor       Int?
+  libraryArea String?
+  shelfNo     String?
+  shelfLevel  Int?
+  status      CopyStatus @default(AVAILABLE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  loans       Loan[]
+}
+
+model Loan {
+  id           Int       @id @default(autoincrement())
+  copyId       Int
+  userId       Int
+  checkoutDate DateTime  @default(now())
+  dueDate      DateTime
+  returnDate   DateTime?
+  fineAmount   Float     @default(0)
+  finePaid     Boolean   @default(false)
+  fineForgiven Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  copy         Copy      @relation(fields: [copyId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  bookId    Int
+  userId    Int
+  stars     Int      @default(1)
+  createdAt DateTime @default(now())
+  
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([bookId, userId])
+}
+
+model Hold {
+  id        Int        @id @default(autoincrement())
+  bookId    Int
+  userId    Int
+  status    HoldStatus @default(WAITING)
+  createdAt DateTime   @default(now())
+  
+  book      Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id])
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  bookId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([bookId, userId])
+}
+
+model Config {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  action    String
+  entity    String
+  entityId  Int?
+  detail    String?
+  createdAt DateTime @default(now())
+  
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Announcement {
+  id          Int                     @id @default(autoincrement())
+  title       String
+  content     String
+  isPinned    Boolean                 @default(false)
+  publishDate DateTime                @default(now())
+  expiryDate  DateTime?
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  
+  publishers  AnnouncementPublisher[]
+}
+
+model AnnouncementPublisher {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  announcementId Int
+  
+  user           User         @relation(fields: [userId], references: [id])
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, announcementId])
+}
