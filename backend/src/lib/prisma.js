@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // lib/prisma.js
 const { PrismaClient } = require('@prisma/client');
 
@@ -8,3 +9,10 @@ const prisma = new PrismaClient({
 });
 
 module.exports = prisma;
+=======
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
+
+module.exports = prisma;
+>>>>>>> ddb6f928a0a4d415de4bcd19023920f056be6972

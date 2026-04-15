@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
+<<<<<<< HEAD
     },
     "target": "ES6",
     "module": "ESNext",
@@ -13,4 +14,8 @@
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "build"]
+=======
+    }
+  }
+>>>>>>> ddb6f928a0a4d415de4bcd19023920f056be6972
 }
